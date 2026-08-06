@@ -1,192 +1,137 @@
 import streamlit as st
 
-from app.ui.cards import metric_card
-from app.ui.charts import ats_gauge
-from app.ui.radar_chart import radar_chart
-from app.utils.pdf_generator import generate_pdf
 
+def render_dashboard(report):
+    """
+    Render ATS Analysis Dashboard.
+    """
 
-def render_dashboard(report: dict):
-
-    # =========================================================
-    # SUCCESS MESSAGE
-    # =========================================================
-
-    st.success("✅ Resume Analysis Completed Successfully!")
-
-    # =========================================================
-    # ATS SCORE GAUGE
-    # =========================================================
-
-    ats_gauge(report["ats_score"])
+    st.success("✅ Resume Analysis Completed!")
 
     st.divider()
 
-    # =========================================================
-    # RADAR CHART
-    # =========================================================
+    # =====================================================
+    # Scores
+    # =====================================================
 
-    radar_chart(report)
-
-    st.divider()
-
-    # =========================================================
-    # TOP KPI CARDS
-    # =========================================================
-
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        metric_card(
-            "Job Role",
-            report["job_role"],
-            "💼",
-            "#2563eb"
-        )
+        st.metric("🎯 ATS Score", f'{report["ats_score"]}%')
 
     with col2:
-        metric_card(
-            "Interview Chance",
-            report["interview_probability"],
-            "🎤",
-            "#9333ea"
-        )
+        st.metric("🔍 Keyword Match", f'{report["keyword_match"]}%')
 
     with col3:
-        metric_card(
-            "Overall Match",
-            report["overall_match"],
-            "📊",
-            "#ea580c"
-        )
+        st.metric("🧠 Skills Match", f'{report["skills_match"]}%')
+
+    with col4:
+        st.metric("💼 Experience", f'{report["experience_match"]}%')
+
+    st.progress(report["ats_score"] / 100)
 
     st.divider()
 
-    # =========================================================
-    # MATCH ANALYSIS
-    # =========================================================
+    # =====================================================
+    # Job Role
+    # =====================================================
 
-    st.subheader("📊 Match Analysis")
+    st.subheader("💼 Target Job Role")
 
-    metrics = [
-        ("Keyword Match", report["keyword_match"]),
-        ("Skills Match", report["skills_match"]),
-        ("Experience Match", report["experience_match"]),
-        ("Education Match", report["education_match"]),
-    ]
-
-    for title, value in metrics:
-
-        st.write(f"**{title}**")
-
-        st.progress(value / 100)
-
-        st.caption(f"{value}%")
+    st.info(report["job_role"])
 
     st.divider()
 
-    # =========================================================
-    # SKILLS
-    # =========================================================
+    # =====================================================
+    # Overall Match
+    # =====================================================
 
-    left, right = st.columns(2)
+    st.subheader("📊 Overall Match")
 
-    with left:
+    st.success(report["overall_match"])
+
+    st.divider()
+
+    # =====================================================
+    # Skills
+    # =====================================================
+
+    col1, col2 = st.columns(2)
+
+    with col1:
 
         st.subheader("✅ Matched Skills")
 
-        if report["matched_skills"]:
+        for skill in report["matched_skills"]:
+            st.success(skill)
 
-            for skill in report["matched_skills"]:
-                st.success(skill)
-
-        else:
-            st.info("No matching skills found.")
-
-    with right:
+    with col2:
 
         st.subheader("❌ Missing Skills")
 
-        if report["missing_skills"]:
-
-            for skill in report["missing_skills"]:
-                st.error(skill)
-
-        else:
-            st.success("No missing skills.")
+        for skill in report["missing_skills"]:
+            st.error(skill)
 
     st.divider()
 
-    # =========================================================
-    # STRENGTHS
-    # =========================================================
+    # =====================================================
+    # Strengths
+    # =====================================================
 
     st.subheader("💪 Strengths")
 
-    for item in report["strengths"]:
-        st.info(item)
+    for strength in report["strengths"]:
+        st.success(strength)
 
     st.divider()
 
-    # =========================================================
-    # WEAKNESSES
-    # =========================================================
+    # =====================================================
+    # Weaknesses
+    # =====================================================
 
     st.subheader("⚠️ Weaknesses")
 
-    for item in report["weaknesses"]:
-        st.warning(item)
+    for weakness in report["weaknesses"]:
+        st.warning(weakness)
 
     st.divider()
 
-    # =========================================================
-    # ATS IMPROVEMENT SUGGESTIONS
-    # =========================================================
+    # =====================================================
+    # Suggestions
+    # =====================================================
 
-    st.subheader("💡 ATS Improvement Suggestions")
+    st.subheader("💡 Suggestions")
 
-    for i, suggestion in enumerate(report["suggestions"], start=1):
-        st.markdown(f"**{i}.** {suggestion}")
+    for suggestion in report["suggestions"]:
+        st.write(f"• {suggestion}")
 
     st.divider()
 
-    # =========================================================
-    # DOWNLOAD PDF
-    # =========================================================
+    # =====================================================
+    # Education
+    # =====================================================
 
-    st.subheader("📥 Download ATS Report")
-
-    pdf = generate_pdf(report)
-
-    st.download_button(
-        label="📄 Download ATS Report (PDF)",
-        data=pdf,
-        file_name="ATS_Report.pdf",
-        mime="application/pdf",
-        use_container_width=True,
+    st.metric(
+        "🎓 Education Match",
+        f'{report["education_match"]}%'
     )
 
     st.divider()
 
-    # =========================================================
-    # RECRUITER VERDICT
-    # =========================================================
+    # =====================================================
+    # Interview Probability
+    # =====================================================
 
-    st.subheader("🏁 Recruiter Verdict")
+    st.subheader("🎤 Interview Probability")
 
-    verdict = report["verdict"]
+    st.info(report["interview_probability"])
 
-    if "hire" in verdict.lower():
-        st.success(verdict)
+    st.divider()
 
-    elif "shortlist" in verdict.lower():
-        st.success(verdict)
+    # =====================================================
+    # Final Verdict
+    # =====================================================
 
-    elif "maybe" in verdict.lower():
-        st.warning(verdict)
+    st.subheader("🏁 Final Verdict")
 
-    elif "reject" in verdict.lower():
-        st.error(verdict)
-
-    else:
-        st.info(verdict)
+    st.success(report["verdict"])

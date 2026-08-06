@@ -1,6 +1,7 @@
 import streamlit as st
 
 from app.ui.progress_cards import render_progress_cards
+from app.ui.charts import render_skill_gap_charts
 
 
 def render_skill_gap_dashboard(report):
@@ -17,6 +18,12 @@ def render_skill_gap_dashboard(report):
     # =====================================================
 
     render_progress_cards(report)
+
+    # =====================================================
+    # Charts
+    # =====================================================
+
+    render_skill_gap_charts(report)
 
     # =====================================================
     # Top Metrics
@@ -100,7 +107,7 @@ def render_skill_gap_dashboard(report):
     st.divider()
 
     # =====================================================
-    # Estimated Time
+    # Estimated Learning Time
     # =====================================================
 
     st.metric(

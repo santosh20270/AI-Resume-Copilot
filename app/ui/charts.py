@@ -1,98 +1,85 @@
-import plotly.graph_objects as go
+import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 
-def ats_gauge(score: int):
+def render_skill_gap_charts(report):
+    """
+    Render interactive Plotly charts for the Skill Gap Dashboard.
+    """
 
-    fig = go.Figure(
-        go.Indicator(
-            mode="gauge+number",
-            value=score,
+    matched = len(report["matched_skills"])
+    missing = len(report["missing_skills"])
 
-            number={
-                "suffix": "/100",
-                "font": {
-                    "size": 48,
-                    "color": "white"
-                }
-            },
+    st.divider()
+    st.subheader("📊 Interactive Skill Analytics")
 
-            title={
-                "text": "<b>ATS Score</b>",
-                "font": {
-                    "size": 28,
-                    "color": "white"
-                }
-            },
+    col1, col2 = st.columns(2)
 
-            gauge={
+    # =====================================================
+    # Donut Chart
+    # =====================================================
 
-                "axis": {
-                    "range": [0, 100],
-                    "tickcolor": "white",
-                    "tickfont": {"color": "white"}
-                },
+    with col1:
 
-                "bar": {
-                    "color": "#3B82F6",
-                    "thickness": 0.35
-                },
-
-                "bgcolor": "#1E293B",
-
-                "borderwidth": 2,
-                "bordercolor": "#334155",
-
-                "steps": [
-                    {
-                        "range": [0, 40],
-                        "color": "#EF4444"
-                    },
-                    {
-                        "range": [40, 70],
-                        "color": "#EAB308"
-                    },
-                    {
-                        "range": [70, 100],
-                        "color": "#22C55E"
-                    }
+        donut_df = pd.DataFrame(
+            {
+                "Category": [
+                    "Matched Skills",
+                    "Missing Skills",
                 ],
-
-                "threshold": {
-                    "line": {
-                        "color": "white",
-                        "width": 5
-                    },
-                    "thickness": 0.8,
-                    "value": score
-                }
+                "Count": [
+                    matched,
+                    missing,
+                ],
             }
         )
-    )
 
-    fig.update_layout(
-
-        height=360,
-
-        paper_bgcolor="#0F172A",
-        plot_bgcolor="#0F172A",
-
-        font={
-            "color": "white"
-        },
-
-        margin=dict(
-            l=20,
-            r=20,
-            t=60,
-            b=20
+        donut = px.pie(
+            donut_df,
+            names="Category",
+            values="Count",
+            hole=0.55,
+            title="Skill Match Distribution",
         )
-    )
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-        config={
-            "displaylogo": False
-        }
-    )
+        donut.update_traces(textposition="inside")
+
+        st.plotly_chart(
+            donut,
+            use_container_width=True,
+        )
+
+    # =====================================================
+    # Bar Chart
+    # =====================================================
+
+    with col2:
+
+        bar_df = pd.DataFrame(
+            {
+                "Category": [
+                    "Matched",
+                    "Missing",
+                ],
+                "Count": [
+                    matched,
+                    missing,
+                ],
+            }
+        )
+
+        bar = px.bar(
+            bar_df,
+            x="Category",
+            y="Count",
+            title="Skill Comparison",
+            text="Count",
+        )
+
+        bar.update_traces(textposition="outside")
+
+        st.plotly_chart(
+            bar,
+            use_container_width=True,
+        )
