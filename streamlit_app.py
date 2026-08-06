@@ -24,6 +24,8 @@ from app.ui.sidebar import render_sidebar
 from app.pages.resume_rewrite import render_resume_rewrite
 from app.pages.cover_letter import render_cover_letter
 from app.pages.interview_prep import render_interview_prep
+from app.pages.skill_gap import render_skill_gap
+from app.pages.settings import render_settings
 
 # ----------------------------------------------------
 # Page Configuration
@@ -161,11 +163,7 @@ elif page == "🎤 Interview Prep":
 
 elif page == "📊 Skill Gap":
 
-    st.title("📊 AI Skill Gap Analysis")
-
-    st.info(
-        "🚧 This feature will be available in Version 3.3"
-    )
+    render_skill_gap()
 
 # ====================================================
 # SETTINGS
@@ -173,16 +171,4 @@ elif page == "📊 Skill Gap":
 
 elif page == "⚙️ Settings":
 
-    st.title("⚙️ Settings")
-
-    st.subheader("AI Resume Copilot")
-
-    st.write("Version : 3.2")
-
-    st.write("Model : Gemini 3.6 Flash")
-
-    st.write("Developer : Santosh")
-
-    st.divider()
-
-    st.success("✅ Application is running successfully.")
+    render_settings()
