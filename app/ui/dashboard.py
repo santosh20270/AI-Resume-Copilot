@@ -2,6 +2,7 @@ import streamlit as st
 
 from app.ui.ats_charts import render_ats_charts
 from app.ui.ats_score_card import render_ats_score_card
+from app.ui.ats_kpi_cards import render_ats_kpi_cards
 
 
 def render_dashboard(report):
@@ -35,38 +36,12 @@ def render_dashboard(report):
     )
 
     # =====================================================
-    # Score Cards
+    # Premium KPI Cards
     # =====================================================
 
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-
-        st.metric(
-            "🔍 Keyword Match",
-            f'{report.get("keyword_match", 0)}%',
-        )
-
-    with col2:
-
-        st.metric(
-            "🧠 Skills Match",
-            f'{report.get("skills_match", 0)}%',
-        )
-
-    with col3:
-
-        st.metric(
-            "💼 Experience",
-            f'{report.get("experience_match", 0)}%',
-        )
-
-    with col4:
-
-        st.metric(
-            "🎓 Education",
-            f'{report.get("education_match", 0)}%',
-        )
+    render_ats_kpi_cards(
+        report
+    )
 
     st.divider()
 
@@ -102,7 +77,9 @@ def render_dashboard(report):
     # Interactive ATS Charts
     # =====================================================
 
-    render_ats_charts(report)
+    render_ats_charts(
+        report
+    )
 
     st.divider()
 
@@ -125,7 +102,9 @@ def render_dashboard(report):
 
             for skill in matched_skills:
 
-                st.success(skill)
+                st.success(
+                    skill
+                )
 
         else:
 
@@ -146,7 +125,9 @@ def render_dashboard(report):
 
             for skill in missing_skills:
 
-                st.error(skill)
+                st.error(
+                    skill
+                )
 
         else:
 
@@ -171,7 +152,9 @@ def render_dashboard(report):
 
         for strength in strengths:
 
-            st.success(strength)
+            st.success(
+                strength
+            )
 
     else:
 
@@ -196,7 +179,9 @@ def render_dashboard(report):
 
         for weakness in weaknesses:
 
-            st.warning(weakness)
+            st.warning(
+                weakness
+            )
 
     else:
 
