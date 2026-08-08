@@ -1,59 +1,38 @@
 import streamlit as st
 
+from app.ui.styles import load_styles
+
 
 def load_theme():
+    """
+    Load the application theme.
+    """
+
+    load_styles()
 
     st.markdown(
         """
         <style>
 
-        .stApp{
-            background:#0F172A;
-            color:white;
+        /* Remove Streamlit default padding */
+        .block-container{
+            padding-top:2rem;
+            padding-bottom:2rem;
         }
 
-        section[data-testid="stSidebar"]{
-            background:#111827;
+        /* Better scrollbar */
+
+        ::-webkit-scrollbar{
+            width:10px;
         }
 
-        h1,h2,h3,h4,h5,h6{
-            color:white !important;
+        ::-webkit-scrollbar-thumb{
+            background:#6366f1;
+            border-radius:20px;
         }
 
-        p,label,span{
-            color:#cbd5e1 !important;
-        }
-
-        div[data-testid="metric-container"]{
-            background:#1E293B;
-            border:1px solid #334155;
-            border-radius:15px;
-            padding:20px;
-        }
-
-        section[data-testid="stFileUploader"]{
-            background:#1E293B;
-            border:1px solid #334155;
-            border-radius:15px;
-            padding:20px;
-        }
-
-        .stButton>button{
-            background:#2563EB;
-            color:white;
-            border:none;
-            border-radius:12px;
-            height:3rem;
-            font-weight:bold;
-        }
-
-        .stButton>button:hover{
-            background:#1D4ED8;
-            color:white;
-        }
-
-        div[data-testid="stAlert"]{
-            border-radius:12px;
+        ::-webkit-scrollbar-track{
+            background:transparent;
         }
 
         </style>

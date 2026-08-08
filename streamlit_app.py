@@ -21,45 +21,69 @@ from app.ui.sidebar import render_sidebar
 # Pages
 # =====================================================
 
+from app.pages.home import render_home
 from app.pages.resume_rewrite import render_resume_rewrite
 from app.pages.cover_letter import render_cover_letter
 from app.pages.interview_prep import render_interview_prep
 from app.pages.skill_gap import render_skill_gap
 from app.pages.settings import render_settings
 
-# ----------------------------------------------------
+
+# =====================================================
 # Page Configuration
-# ----------------------------------------------------
+# =====================================================
 
 st.set_page_config(
     page_title="AI Resume Copilot",
-    page_icon="📄",
+    page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ----------------------------------------------------
+
+# =====================================================
 # Load Theme
-# ----------------------------------------------------
+# =====================================================
 
 load_theme()
 
-# ----------------------------------------------------
+
+# =====================================================
+# Navigation State
+# =====================================================
+
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 Home"
+
+
+# =====================================================
 # Sidebar
-# ----------------------------------------------------
+# =====================================================
 
-page = render_sidebar()
+render_sidebar()
 
-# ====================================================
+page = st.session_state.page
+
+
+# =====================================================
+# HOME
+# =====================================================
+
+if page == "🏠 Home":
+
+    render_home()
+
+
+# =====================================================
 # ATS ANALYZER
-# ====================================================
+# =====================================================
 
-if page == "📄 ATS Analyzer":
+elif page == "📄 ATS Analyzer":
 
-    st.title("📄 AI Resume Copilot")
+    st.title("📄 ATS Resume Analyzer")
 
-    st.subheader(
-        "Analyze your resume against any job description using AI"
+    st.write(
+        "Analyze your resume against a job description using AI."
     )
 
     st.divider()
@@ -68,21 +92,31 @@ if page == "📄 ATS Analyzer":
 
     with col1:
 
-        st.header("📄 Resume")
-
         resume_file = st.file_uploader(
-            "Upload Resume",
-            type=["pdf", "docx", "txt", "png", "jpg", "jpeg"],
+            "📄 Upload Resume",
+            type=[
+                "pdf",
+                "docx",
+                "txt",
+                "png",
+                "jpg",
+                "jpeg",
+            ],
             key="resume",
         )
 
     with col2:
 
-        st.header("💼 Job Description")
-
         job_file = st.file_uploader(
-            "Upload Job Description",
-            type=["pdf", "docx", "txt", "png", "jpg", "jpeg"],
+            "💼 Upload Job Description",
+            type=[
+                "pdf",
+                "docx",
+                "txt",
+                "png",
+                "jpg",
+                "jpeg",
+            ],
             key="job",
         )
 
@@ -94,14 +128,19 @@ if page == "📄 ATS Analyzer":
     ):
 
         if resume_file is None:
-            st.error("Please upload a Resume.")
+
+            st.error("Please upload a resume.")
             st.stop()
 
         if job_file is None:
-            st.error("Please upload a Job Description.")
+
+            st.error("Please upload a job description.")
             st.stop()
 
-        os.makedirs("uploads", exist_ok=True)
+        os.makedirs(
+            "uploads",
+            exist_ok=True,
+        )
 
         resume_path = os.path.join(
             "uploads",
@@ -113,19 +152,44 @@ if page == "📄 ATS Analyzer":
             job_file.name,
         )
 
-        with open(resume_path, "wb") as f:
-            f.write(resume_file.getbuffer())
+        with open(
+            resume_path,
+            "wb",
+        ) as f:
 
-        with open(job_path, "wb") as f:
-            f.write(job_file.getbuffer())
+            f.write(
+                resume_file.getbuffer()
+            )
 
-        with st.spinner("📄 Reading Resume..."):
-            resume_text = extract_text(resume_path)
+        with open(
+            job_path,
+            "wb",
+        ) as f:
 
-        with st.spinner("💼 Reading Job Description..."):
-            job_description = extract_text(job_path)
+            f.write(
+                job_file.getbuffer()
+            )
 
-        with st.spinner("🤖 AI is analyzing your Resume..."):
+        with st.spinner(
+            "📄 Reading Resume..."
+        ):
+
+            resume_text = extract_text(
+                resume_path
+            )
+
+        with st.spinner(
+            "💼 Reading Job Description..."
+        ):
+
+            job_description = extract_text(
+                job_path
+            )
+
+        with st.spinner(
+            "🤖 AI is analyzing your resume..."
+        ):
+
             report = analyze_resume(
                 resume_text,
                 job_description,
@@ -133,41 +197,46 @@ if page == "📄 ATS Analyzer":
 
         render_dashboard(report)
 
-# ====================================================
+
+# =====================================================
 # RESUME REWRITE
-# ====================================================
+# =====================================================
 
 elif page == "📝 Resume Rewrite":
 
     render_resume_rewrite()
 
-# ====================================================
+
+# =====================================================
 # COVER LETTER
-# ====================================================
+# =====================================================
 
 elif page == "📨 Cover Letter":
 
     render_cover_letter()
 
-# ====================================================
+
+# =====================================================
 # INTERVIEW PREPARATION
-# ====================================================
+# =====================================================
 
 elif page == "🎤 Interview Prep":
 
     render_interview_prep()
 
-# ====================================================
+
+# =====================================================
 # SKILL GAP
-# ====================================================
+# =====================================================
 
 elif page == "📊 Skill Gap":
 
     render_skill_gap()
 
-# ====================================================
+
+# =====================================================
 # SETTINGS
-# ====================================================
+# =====================================================
 
 elif page == "⚙️ Settings":
 
