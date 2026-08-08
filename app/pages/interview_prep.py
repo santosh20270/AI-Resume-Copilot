@@ -6,12 +6,19 @@ from app.ai.interview import generate_interview_questions
 
 
 def render_interview_prep():
+    """
+    Render the AI Interview Preparation page.
+    """
+
+    # =====================================================
+    # Page Header
+    # =====================================================
 
     st.title("🎤 AI Interview Preparation")
 
     st.write(
-        "Upload your resume and a job description to generate "
-        "AI-powered interview questions and suggested answers."
+        "Prepare for your target role with AI-generated "
+        "technical, HR, and behavioral interview questions."
     )
 
     st.divider()
@@ -20,44 +27,86 @@ def render_interview_prep():
     # Upload Section
     # =====================================================
 
+    st.subheader("📂 Resume & Job Description")
+
     col1, col2 = st.columns(2)
 
     with col1:
 
-        resume_file = st.file_uploader(
-            "📄 Upload Resume",
-            type=["pdf", "docx", "txt"],
-            key="interview_resume",
-        )
+        with st.container(border=True):
+
+            st.markdown("### 📄 Resume")
+
+            resume_file = st.file_uploader(
+                "Upload your resume",
+                type=[
+                    "pdf",
+                    "docx",
+                    "txt",
+                ],
+                key="interview_resume",
+            )
+
+            if resume_file:
+
+                st.success(
+                    f"✓ {resume_file.name}"
+                )
 
     with col2:
 
-        jd_file = st.file_uploader(
-            "💼 Upload Job Description",
-            type=["pdf", "docx", "txt"],
-            key="interview_jd",
-        )
+        with st.container(border=True):
+
+            st.markdown("### 💼 Target Job")
+
+            jd_file = st.file_uploader(
+                "Upload the job description",
+                type=[
+                    "pdf",
+                    "docx",
+                    "txt",
+                ],
+                key="interview_jd",
+            )
+
+            if jd_file:
+
+                st.success(
+                    f"✓ {jd_file.name}"
+                )
 
     st.divider()
 
     # =====================================================
-    # Generate Interview Questions
+    # Generate Interview Preparation
     # =====================================================
 
     if st.button(
-        "🚀 Generate Interview Questions",
+        "🚀 Generate Interview Preparation",
         use_container_width=True,
+        type="primary",
     ):
 
         if resume_file is None:
-            st.error("Please upload a resume.")
+
+            st.error(
+                "Please upload your resume first."
+            )
+
             st.stop()
 
         if jd_file is None:
-            st.error("Please upload a job description.")
+
+            st.error(
+                "Please upload the target job description."
+            )
+
             st.stop()
 
-        os.makedirs("uploads", exist_ok=True)
+        os.makedirs(
+            "uploads",
+            exist_ok=True,
+        )
 
         resume_path = os.path.join(
             "uploads",
@@ -69,144 +118,320 @@ def render_interview_prep():
             jd_file.name,
         )
 
-        with open(resume_path, "wb") as f:
-            f.write(resume_file.getbuffer())
+        # -------------------------------------------------
+        # Save Resume
+        # -------------------------------------------------
 
-        with open(jd_path, "wb") as f:
-            f.write(jd_file.getbuffer())
+        with open(
+            resume_path,
+            "wb",
+        ) as f:
 
-        with st.spinner("📄 Reading Resume..."):
-            resume_text = extract_text(resume_path)
+            f.write(
+                resume_file.getbuffer()
+            )
 
-        with st.spinner("💼 Reading Job Description..."):
-            jd_text = extract_text(jd_path)
+        # -------------------------------------------------
+        # Save Job Description
+        # -------------------------------------------------
 
-        with st.spinner("🤖 Generating Interview Preparation..."):
+        with open(
+            jd_path,
+            "wb",
+        ) as f:
+
+            f.write(
+                jd_file.getbuffer()
+            )
+
+        # -------------------------------------------------
+        # Extract Resume
+        # -------------------------------------------------
+
+        with st.spinner(
+            "📄 Reading your resume..."
+        ):
+
+            resume_text = extract_text(
+                resume_path
+            )
+
+        # -------------------------------------------------
+        # Extract Job Description
+        # -------------------------------------------------
+
+        with st.spinner(
+            "💼 Reading the job description..."
+        ):
+
+            jd_text = extract_text(
+                jd_path
+            )
+
+        # -------------------------------------------------
+        # Generate Interview Guide
+        # -------------------------------------------------
+
+        with st.spinner(
+            "🤖 AI is preparing your interview guide..."
+        ):
+
             report = generate_interview_questions(
                 resume_text,
                 jd_text,
             )
 
-        st.success("✅ Interview Preparation Ready!")
+        # -------------------------------------------------
+        # Store result
+        # -------------------------------------------------
 
-        st.divider()
+        st.session_state[
+            "interview_report"
+        ] = report
 
-        st.subheader("💼 Target Job Role")
-        st.info(report["job_role"])
+        st.session_state[
+            "interview_complete"
+        ] = True
 
-        st.subheader("⭐ Difficulty")
-        st.info(report["difficulty"])
+        st.rerun()
 
-        st.divider()
+    # =====================================================
+    # Interview Results
+    # =====================================================
 
-        # =====================================================
-        # Technical Questions
-        # =====================================================
+    if st.session_state.get(
+        "interview_complete",
+        False,
+    ):
 
-        st.header("💻 Technical Questions")
+        report = st.session_state.get(
+            "interview_report",
+            {},
+        )
 
-        for index, item in enumerate(
-            report["technical_questions"],
-            start=1,
-        ):
+        if report:
 
-            with st.expander(f"Question {index}"):
+            st.success(
+                "✅ Interview Preparation Ready!"
+            )
 
-                st.markdown(
-                    f"**Question:** {item['question']}"
+            st.divider()
+
+            # =================================================
+            # Overview
+            # =================================================
+
+            st.subheader(
+                "🎯 Interview Overview"
+            )
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+
+                with st.container(
+                    border=True
+                ):
+
+                    st.markdown(
+                        "### 💼 Target Role"
+                    )
+
+                    st.markdown(
+                        f"## {report.get('job_role', 'Unknown')}"
+                    )
+
+            with col2:
+
+                with st.container(
+                    border=True
+                ):
+
+                    st.markdown(
+                        "### 🔥 Difficulty"
+                    )
+
+                    st.markdown(
+                        f"## {report.get('difficulty', 'Unknown')}"
+                    )
+
+            st.divider()
+
+            # =================================================
+            # Technical Questions
+            # =================================================
+
+            st.subheader(
+                "🧠 Technical Questions"
+            )
+
+            technical_questions = report.get(
+                "technical_questions",
+                [],
+            )
+
+            for index, item in enumerate(
+                technical_questions,
+                start=1,
+            ):
+
+                question = item.get(
+                    "question",
+                    "Question unavailable.",
                 )
 
-                st.markdown(
-                    f"**Suggested Answer:** {item['answer']}"
+                answer = item.get(
+                    "answer",
+                    "Suggested answer unavailable.",
                 )
 
-        st.divider()
+                with st.expander(
+                    f"🧠 {index}. {question}"
+                ):
 
-        # =====================================================
-        # HR Questions
-        # =====================================================
+                    st.markdown(
+                        "**Suggested Answer**"
+                    )
 
-        st.header("👔 HR Questions")
+                    st.write(
+                        answer
+                    )
 
-        for index, item in enumerate(
-            report["hr_questions"],
-            start=1,
-        ):
+            st.divider()
 
-            with st.expander(f"Question {index}"):
+            # =================================================
+            # HR Questions
+            # =================================================
 
-                st.markdown(
-                    f"**Question:** {item['question']}"
+            st.subheader(
+                "💼 HR Questions"
+            )
+
+            hr_questions = report.get(
+                "hr_questions",
+                [],
+            )
+
+            for index, item in enumerate(
+                hr_questions,
+                start=1,
+            ):
+
+                question = item.get(
+                    "question",
+                    "Question unavailable.",
                 )
 
-                st.markdown(
-                    f"**Suggested Answer:** {item['answer']}"
-                )        
-                st.divider()
-
-        # =====================================================
-        # Behavioral Questions
-        # =====================================================
-
-        st.header("🧠 Behavioral Questions")
-
-        for index, item in enumerate(
-            report["behavioral_questions"],
-            start=1,
-        ):
-
-            with st.expander(f"Question {index}"):
-
-                st.markdown(
-                    f"**Question:** {item['question']}"
+                answer = item.get(
+                    "answer",
+                    "Suggested answer unavailable.",
                 )
 
-                st.markdown(
-                    f"**Suggested Answer:** {item['answer']}"
+                with st.expander(
+                    f"💼 {index}. {question}"
+                ):
+
+                    st.markdown(
+                        "**Suggested Answer**"
+                    )
+
+                    st.write(
+                        answer
+                    )
+
+            st.divider()
+
+            # =================================================
+            # Behavioral Questions
+            # =================================================
+
+            st.subheader(
+                "⭐ Behavioral Questions"
+            )
+
+            behavioral_questions = report.get(
+                "behavioral_questions",
+                [],
+            )
+
+            for index, item in enumerate(
+                behavioral_questions,
+                start=1,
+            ):
+
+                question = item.get(
+                    "question",
+                    "Question unavailable.",
                 )
 
-        st.divider()
+                answer = item.get(
+                    "answer",
+                    "Suggested answer unavailable.",
+                )
 
-        # =====================================================
-        # Interview Tips
-        # =====================================================
+                with st.expander(
+                    f"⭐ {index}. {question}"
+                ):
 
-        st.header("💡 Interview Tips")
+                    st.markdown(
+                        "**Suggested Answer**"
+                    )
 
-        for tip in report["tips"]:
-            st.success(tip)
+                    st.write(
+                        answer
+                    )
 
-        st.divider()
+            st.divider()
 
-        # =====================================================
-        # Save Report in Session
-        # =====================================================
+            # =================================================
+            # Interview Tips
+            # =================================================
 
-        st.session_state["interview_report"] = report
+            st.subheader(
+                "💡 Interview Preparation Tips"
+            )
 
-# =====================================================
-# Download Section
-# =====================================================
+            tips = report.get(
+                "tips",
+                [],
+            )
 
-if "interview_report" in st.session_state:
+            if tips:
 
-    from app.utils.interview_docx import generate_interview_docx
+                for index, tip in enumerate(
+                    tips,
+                    start=1,
+                ):
 
-    report = st.session_state["interview_report"]
+                    st.info(
+                        f"**{index}.** {tip}"
+                    )
 
-    st.header("📥 Download Interview Guide")
+            else:
 
-    docx_file = generate_interview_docx(report)
+                st.info(
+                    "No preparation tips available."
+                )
 
-    st.download_button(
-        label="📝 Download Interview Guide (.docx)",
-        data=docx_file,
-        file_name="Interview_Preparation_Guide.docx",
-        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        use_container_width=True,
-    )
+            st.divider()
 
-    st.info(
-        "💡 Practice these questions aloud before your interview. "
-        "Customize the suggested answers with your own experiences."
-    )
+            # =================================================
+            # Generate Again
+            # =================================================
+
+            if st.button(
+                "🔄 Prepare for Another Interview",
+                use_container_width=True,
+            ):
+
+                st.session_state.pop(
+                    "interview_report",
+                    None,
+                )
+
+                st.session_state.pop(
+                    "interview_complete",
+                    None,
+                )
+
+                st.rerun()
