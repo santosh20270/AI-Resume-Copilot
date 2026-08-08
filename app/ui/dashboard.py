@@ -1,6 +1,7 @@
 import streamlit as st
 
 from app.ui.ats_charts import render_ats_charts
+from app.ui.ats_score_card import render_ats_score_card
 
 
 def render_dashboard(report):
@@ -19,24 +20,18 @@ def render_dashboard(report):
     st.subheader("🎯 ATS Analysis Overview")
 
     # =====================================================
-    # Main ATS Score
+    # Premium ATS Score
     # =====================================================
 
-    ats_score = int(report.get("ats_score", 0))
-
-    st.metric(
-        "🎯 ATS Score",
-        f"{ats_score}%",
+    ats_score = int(
+        report.get(
+            "ats_score",
+            0,
+        )
     )
 
-    st.progress(
-        max(
-            0,
-            min(
-                ats_score,
-                100,
-            ),
-        ) / 100
+    render_ats_score_card(
+        ats_score
     )
 
     # =====================================================
@@ -46,24 +41,28 @@ def render_dashboard(report):
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
+
         st.metric(
             "🔍 Keyword Match",
             f'{report.get("keyword_match", 0)}%',
         )
 
     with col2:
+
         st.metric(
             "🧠 Skills Match",
             f'{report.get("skills_match", 0)}%',
         )
 
     with col3:
+
         st.metric(
             "💼 Experience",
             f'{report.get("experience_match", 0)}%',
         )
 
     with col4:
+
         st.metric(
             "🎓 Education",
             f'{report.get("education_match", 0)}%',
@@ -125,6 +124,7 @@ def render_dashboard(report):
         if matched_skills:
 
             for skill in matched_skills:
+
                 st.success(skill)
 
         else:
@@ -145,6 +145,7 @@ def render_dashboard(report):
         if missing_skills:
 
             for skill in missing_skills:
+
                 st.error(skill)
 
         else:
@@ -169,6 +170,7 @@ def render_dashboard(report):
     if strengths:
 
         for strength in strengths:
+
             st.success(strength)
 
     else:
@@ -193,6 +195,7 @@ def render_dashboard(report):
     if weaknesses:
 
         for weakness in weaknesses:
+
             st.warning(weakness)
 
     else:
@@ -204,7 +207,7 @@ def render_dashboard(report):
     st.divider()
 
     # =====================================================
-    # Suggestions
+    # AI Recommendations
     # =====================================================
 
     st.subheader("💡 AI Recommendations")
@@ -217,6 +220,7 @@ def render_dashboard(report):
     if suggestions:
 
         for suggestion in suggestions:
+
             st.write(
                 f"• {suggestion}"
             )
