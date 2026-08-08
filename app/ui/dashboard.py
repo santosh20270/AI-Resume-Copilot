@@ -5,6 +5,7 @@ from app.ui.ats_score_card import render_ats_score_card
 from app.ui.ats_kpi_cards import render_ats_kpi_cards
 from app.ui.skill_match_cards import render_skill_match_cards
 from app.ui.ai_insights import render_ai_insights
+from app.services.ats_report import generate_ats_report
 
 
 def render_dashboard(report):
@@ -101,4 +102,28 @@ def render_dashboard(report):
 
     render_ai_insights(
         report
+    )
+
+    st.divider()
+
+    # =====================================================
+    # Download Report
+    # =====================================================
+
+    st.subheader("📥 Export ATS Report")
+
+    st.caption(
+        "Download a professional PDF containing your complete ATS analysis."
+    )
+
+    pdf_file = generate_ats_report(
+        report
+    )
+
+    st.download_button(
+        label="📥 Download ATS Report",
+        data=pdf_file,
+        file_name="AI_Resume_Copilot_ATS_Report.pdf",
+        mime="application/pdf",
+        use_container_width=True,
     )
