@@ -3,6 +3,7 @@ import streamlit as st
 from app.ui.ats_charts import render_ats_charts
 from app.ui.ats_score_card import render_ats_score_card
 from app.ui.ats_kpi_cards import render_ats_kpi_cards
+from app.ui.skill_match_cards import render_skill_match_cards
 
 
 def render_dashboard(report):
@@ -84,56 +85,12 @@ def render_dashboard(report):
     st.divider()
 
     # =====================================================
-    # Skills
+    # Skills Analysis
     # =====================================================
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("✅ Matched Skills")
-
-        matched_skills = report.get(
-            "matched_skills",
-            [],
-        )
-
-        if matched_skills:
-
-            for skill in matched_skills:
-
-                st.success(
-                    skill
-                )
-
-        else:
-
-            st.info(
-                "No matched skills available."
-            )
-
-    with col2:
-
-        st.subheader("❌ Missing Skills")
-
-        missing_skills = report.get(
-            "missing_skills",
-            [],
-        )
-
-        if missing_skills:
-
-            for skill in missing_skills:
-
-                st.error(
-                    skill
-                )
-
-        else:
-
-            st.success(
-                "No missing skills identified."
-            )
+    render_skill_match_cards(
+        report
+    )
 
     st.divider()
 
