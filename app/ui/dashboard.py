@@ -4,6 +4,7 @@ from app.ui.ats_charts import render_ats_charts
 from app.ui.ats_score_card import render_ats_score_card
 from app.ui.ats_kpi_cards import render_ats_kpi_cards
 from app.ui.skill_match_cards import render_skill_match_cards
+from app.ui.ai_insights import render_ai_insights
 
 
 def render_dashboard(report):
@@ -95,108 +96,9 @@ def render_dashboard(report):
     st.divider()
 
     # =====================================================
-    # Strengths
+    # AI Insights
     # =====================================================
 
-    st.subheader("💪 Strengths")
-
-    strengths = report.get(
-        "strengths",
-        [],
-    )
-
-    if strengths:
-
-        for strength in strengths:
-
-            st.success(
-                strength
-            )
-
-    else:
-
-        st.info(
-            "No strengths available."
-        )
-
-    st.divider()
-
-    # =====================================================
-    # Weaknesses
-    # =====================================================
-
-    st.subheader("⚠️ Weaknesses")
-
-    weaknesses = report.get(
-        "weaknesses",
-        [],
-    )
-
-    if weaknesses:
-
-        for weakness in weaknesses:
-
-            st.warning(
-                weakness
-            )
-
-    else:
-
-        st.info(
-            "No weaknesses available."
-        )
-
-    st.divider()
-
-    # =====================================================
-    # AI Recommendations
-    # =====================================================
-
-    st.subheader("💡 AI Recommendations")
-
-    suggestions = report.get(
-        "suggestions",
-        [],
-    )
-
-    if suggestions:
-
-        for suggestion in suggestions:
-
-            st.write(
-                f"• {suggestion}"
-            )
-
-    else:
-
-        st.info(
-            "No recommendations available."
-        )
-
-    st.divider()
-
-    # =====================================================
-    # Interview Probability
-    # =====================================================
-
-    st.subheader("🎤 Interview Probability")
-
-    st.info(
-        report.get(
-            "interview_probability",
-            "Unavailable",
-        )
-    )
-
-    # =====================================================
-    # Final Verdict
-    # =====================================================
-
-    st.subheader("🏁 Final Verdict")
-
-    st.success(
-        report.get(
-            "verdict",
-            "Unavailable",
-        )
+    render_ai_insights(
+        report
     )
