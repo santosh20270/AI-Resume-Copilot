@@ -4,15 +4,23 @@ import streamlit as st
 from app.services.document_service import extract_text
 from app.ai.resume_rewriter import rewrite_resume
 from app.utils.docx_generator import generate_docx
+from app.utils.pdf_generator import generate_pdf
 
 
 def render_resume_rewrite():
+    """
+    Render the AI Resume Rewrite page.
+    """
+
+    # =====================================================
+    # Page Header
+    # =====================================================
 
     st.title("📝 AI Resume Rewrite")
 
     st.write(
-        "Upload your resume and a job description. "
-        "AI will rewrite your resume to improve ATS compatibility."
+        "Optimize your resume for a target job while keeping "
+        "your experience and information completely truthful."
     )
 
     st.divider()
@@ -21,41 +29,80 @@ def render_resume_rewrite():
     # Upload Section
     # =====================================================
 
+    st.subheader("📂 Resume & Job Description")
+
     col1, col2 = st.columns(2)
 
     with col1:
 
-        resume_file = st.file_uploader(
-            "📄 Upload Resume",
-            type=["pdf", "docx", "txt"],
-            key="rewrite_resume",
-        )
+        with st.container(border=True):
+
+            st.markdown("### 📄 Resume")
+
+            resume_file = st.file_uploader(
+                "Upload your current resume",
+                type=[
+                    "pdf",
+                    "docx",
+                    "txt",
+                ],
+                key="rewrite_resume",
+            )
+
+            if resume_file:
+
+                st.success(
+                    f"✓ {resume_file.name}"
+                )
 
     with col2:
 
-        jd_file = st.file_uploader(
-            "💼 Upload Job Description",
-            type=["pdf", "docx", "txt"],
-            key="rewrite_jd",
-        )
+        with st.container(border=True):
+
+            st.markdown("### 💼 Target Job")
+
+            jd_file = st.file_uploader(
+                "Upload the job description",
+                type=[
+                    "pdf",
+                    "docx",
+                    "txt",
+                ],
+                key="rewrite_jd",
+            )
+
+            if jd_file:
+
+                st.success(
+                    f"✓ {jd_file.name}"
+                )
 
     st.divider()
 
     # =====================================================
-    # Rewrite Resume
+    # Rewrite Button
     # =====================================================
 
     if st.button(
-        "✨ Rewrite Resume",
+        "✨ Rewrite Resume with AI",
         use_container_width=True,
+        type="primary",
     ):
 
         if resume_file is None:
-            st.error("Please upload a resume.")
+
+            st.error(
+                "Please upload your resume first."
+            )
+
             st.stop()
 
         if jd_file is None:
-            st.error("Please upload a job description.")
+
+            st.error(
+                "Please upload the target job description."
+            )
+
             st.stop()
 
         os.makedirs(
@@ -73,6 +120,10 @@ def render_resume_rewrite():
             jd_file.name,
         )
 
+        # -------------------------------------------------
+        # Save Resume
+        # -------------------------------------------------
+
         with open(
             resume_path,
             "wb",
@@ -81,6 +132,10 @@ def render_resume_rewrite():
             f.write(
                 resume_file.getbuffer()
             )
+
+        # -------------------------------------------------
+        # Save Job Description
+        # -------------------------------------------------
 
         with open(
             jd_path,
@@ -91,24 +146,36 @@ def render_resume_rewrite():
                 jd_file.getbuffer()
             )
 
+        # -------------------------------------------------
+        # Extract Resume
+        # -------------------------------------------------
+
         with st.spinner(
-            "📄 Reading Resume..."
+            "📄 Reading your resume..."
         ):
 
             resume_text = extract_text(
                 resume_path
             )
 
+        # -------------------------------------------------
+        # Extract Job Description
+        # -------------------------------------------------
+
         with st.spinner(
-            "💼 Reading Job Description..."
+            "💼 Reading the job description..."
         ):
 
             jd_text = extract_text(
                 jd_path
             )
 
+        # -------------------------------------------------
+        # AI Rewrite
+        # -------------------------------------------------
+
         with st.spinner(
-            "🤖 AI is rewriting your resume..."
+            "🤖 AI is optimizing your resume..."
         ):
 
             rewritten = rewrite_resume(
@@ -116,40 +183,150 @@ def render_resume_rewrite():
                 jd_text,
             )
 
-        st.success(
-            "✅ Resume rewritten successfully!"
+        # -------------------------------------------------
+        # Store result
+        # -------------------------------------------------
+
+        st.session_state[
+            "rewritten_resume"
+        ] = rewritten
+
+        st.session_state[
+            "rewrite_complete"
+        ] = True
+
+        st.rerun()
+
+    # =====================================================
+    # Rewritten Resume
+    # =====================================================
+
+    if st.session_state.get(
+        "rewrite_complete",
+        False,
+    ):
+
+        rewritten = st.session_state.get(
+            "rewritten_resume",
+            "",
         )
 
-        st.divider()
+        if rewritten:
 
-        st.markdown(rewritten)
+            st.success(
+                "✅ Resume rewritten successfully!"
+            )
 
-        st.divider()
+            st.divider()
 
-        st.subheader("📥 Download Resume")
+            # =================================================
+            # Preview
+            # =================================================
 
-        # =====================================================
-        # Markdown Download
-        # =====================================================
+            st.subheader(
+                "✨ Optimized Resume"
+            )
 
-        st.download_button(
-            label="📄 Download as Markdown (.md)",
-            data=rewritten,
-            file_name="Rewritten_Resume.md",
-            mime="text/markdown",
-            use_container_width=True,
-        )
+            st.caption(
+                "Review the AI-generated resume before downloading."
+            )
 
-        # =====================================================
-        # DOCX Download
-        # =====================================================
+            with st.container(
+                border=True
+            ):
 
-        docx_file = generate_docx(rewritten)
+                st.markdown(
+                    rewritten
+                )
 
-        st.download_button(
-            label="📝 Download as Word (.docx)",
-            data=docx_file,
-            file_name="Rewritten_Resume.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            use_container_width=True,
-        )
+            st.divider()
+
+            # =================================================
+            # Downloads
+            # =================================================
+
+            st.subheader(
+                "📥 Download Resume"
+            )
+
+            st.caption(
+                "Choose your preferred format."
+            )
+
+            col1, col2, col3 = st.columns(3)
+
+            # -------------------------------------------------
+            # Markdown
+            # -------------------------------------------------
+
+            with col1:
+
+                st.download_button(
+                    label="📄 Markdown",
+                    data=rewritten,
+                    file_name="Rewritten_Resume.md",
+                    mime="text/markdown",
+                    use_container_width=True,
+                )
+
+            # -------------------------------------------------
+            # DOCX
+            # -------------------------------------------------
+
+            with col2:
+
+                docx_file = generate_docx(
+                    rewritten
+                )
+
+                st.download_button(
+                    label="📝 Word",
+                    data=docx_file,
+                    file_name="Rewritten_Resume.docx",
+                    mime=(
+                        "application/vnd.openxmlformats-officedocument."
+                        "wordprocessingml.document"
+                    ),
+                    use_container_width=True,
+                )
+
+            # -------------------------------------------------
+            # PDF
+            # -------------------------------------------------
+
+            with col3:
+
+                pdf_file = generate_pdf(
+                    rewritten
+                )
+
+                st.download_button(
+                    label="📕 PDF",
+                    data=pdf_file,
+                    file_name="Rewritten_Resume.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+
+            st.divider()
+
+            # =================================================
+            # Rewrite Again
+            # =================================================
+
+            if st.button(
+                "🔄 Rewrite Another Resume",
+                use_container_width=True,
+            ):
+
+                st.session_state.pop(
+                    "rewritten_resume",
+                    None,
+                )
+
+                st.session_state.pop(
+                    "rewrite_complete",
+                    None,
+                )
+
+                st.rerun()

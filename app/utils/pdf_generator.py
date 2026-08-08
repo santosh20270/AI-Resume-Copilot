@@ -1,115 +1,106 @@
 from io import BytesIO
+
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import mm
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+)
 
 
-def generate_pdf(report: dict):
+def generate_pdf(markdown_text):
+    """
+    Generate a PDF from rewritten resume text.
+    """
 
     buffer = BytesIO()
 
-    doc = SimpleDocTemplate(buffer)
+    document = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=18 * mm,
+        leftMargin=18 * mm,
+        topMargin=18 * mm,
+        bottomMargin=18 * mm,
+    )
 
     styles = getSampleStyleSheet()
 
     story = []
 
-    # -------------------------------------------------------
-    # Title
-    # -------------------------------------------------------
+    lines = markdown_text.splitlines()
 
-    story.append(Paragraph("<b>AI Resume Copilot - ATS Report</b>", styles["Title"]))
-    story.append(Spacer(1, 20))
+    for line in lines:
 
-    # -------------------------------------------------------
-    # Basic Information
-    # -------------------------------------------------------
+        line = line.strip()
 
-    story.append(Paragraph(f"<b>ATS Score:</b> {report['ats_score']}/100", styles["Heading2"]))
-    story.append(Paragraph(f"<b>Job Role:</b> {report['job_role']}", styles["Normal"]))
-    story.append(Paragraph(f"<b>Overall Match:</b> {report['overall_match']}", styles["Normal"]))
-    story.append(Paragraph(f"<b>Interview Chance:</b> {report['interview_probability']}", styles["Normal"]))
+        if not line:
+            story.append(
+                Spacer(
+                    1,
+                    6,
+                )
+            )
+            continue
 
-    story.append(Spacer(1, 15))
+        # Markdown headings
+        if line.startswith("# "):
 
-    # -------------------------------------------------------
-    # Match Analysis
-    # -------------------------------------------------------
+            story.append(
+                Paragraph(
+                    line[2:].strip(),
+                    styles["Title"],
+                )
+            )
 
-    story.append(Paragraph("<b>Match Analysis</b>", styles["Heading2"]))
+        elif line.startswith("## "):
 
-    story.append(Paragraph(f"Keyword Match: {report['keyword_match']}%", styles["Normal"]))
-    story.append(Paragraph(f"Skills Match: {report['skills_match']}%", styles["Normal"]))
-    story.append(Paragraph(f"Experience Match: {report['experience_match']}%", styles["Normal"]))
-    story.append(Paragraph(f"Education Match: {report['education_match']}%", styles["Normal"]))
+            story.append(
+                Paragraph(
+                    line[3:].strip(),
+                    styles["Heading2"],
+                )
+            )
 
-    story.append(Spacer(1, 15))
+        elif line.startswith("### "):
 
-    # -------------------------------------------------------
-    # Matched Skills
-    # -------------------------------------------------------
+            story.append(
+                Paragraph(
+                    line[4:].strip(),
+                    styles["Heading3"],
+                )
+            )
 
-    story.append(Paragraph("<b>Matched Skills</b>", styles["Heading2"]))
+        # Bullet points
+        elif line.startswith("- "):
 
-    for skill in report["matched_skills"]:
-        story.append(Paragraph(f"• {skill}", styles["Normal"]))
+            story.append(
+                Paragraph(
+                    f"• {line[2:].strip()}",
+                    styles["BodyText"],
+                )
+            )
 
-    story.append(Spacer(1, 15))
+        else:
 
-    # -------------------------------------------------------
-    # Missing Skills
-    # -------------------------------------------------------
+            story.append(
+                Paragraph(
+                    line,
+                    styles["BodyText"],
+                )
+            )
 
-    story.append(Paragraph("<b>Missing Skills</b>", styles["Heading2"]))
+        story.append(
+            Spacer(
+                1,
+                4,
+            )
+        )
 
-    for skill in report["missing_skills"]:
-        story.append(Paragraph(f"• {skill}", styles["Normal"]))
+    document.build(story)
 
-    story.append(Spacer(1, 15))
+    buffer.seek(0)
 
-    # -------------------------------------------------------
-    # Strengths
-    # -------------------------------------------------------
-
-    story.append(Paragraph("<b>Strengths</b>", styles["Heading2"]))
-
-    for item in report["strengths"]:
-        story.append(Paragraph(f"• {item}", styles["Normal"]))
-
-    story.append(Spacer(1, 15))
-
-    # -------------------------------------------------------
-    # Weaknesses
-    # -------------------------------------------------------
-
-    story.append(Paragraph("<b>Weaknesses</b>", styles["Heading2"]))
-
-    for item in report["weaknesses"]:
-        story.append(Paragraph(f"• {item}", styles["Normal"]))
-
-    story.append(Spacer(1, 15))
-
-    # -------------------------------------------------------
-    # Suggestions
-    # -------------------------------------------------------
-
-    story.append(Paragraph("<b>ATS Improvement Suggestions</b>", styles["Heading2"]))
-
-    for item in report["suggestions"]:
-        story.append(Paragraph(f"• {item}", styles["Normal"]))
-
-    story.append(Spacer(1, 15))
-
-    # -------------------------------------------------------
-    # Verdict
-    # -------------------------------------------------------
-
-    story.append(Paragraph("<b>Recruiter Verdict</b>", styles["Heading2"]))
-    story.append(Paragraph(report["verdict"], styles["Normal"]))
-
-    doc.build(story)
-
-    pdf = buffer.getvalue()
-
-    buffer.close()
-
-    return pdf
+    return buffer
