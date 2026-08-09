@@ -5,9 +5,10 @@ Gemini Client Configuration
 import time
 
 from google import genai
-from google.genai.errors import ServerError
+from google.genai.errors import ServerError, ClientError
 
 from app.config import GEMINI_API_KEY, GEMINI_MODEL
+
 
 # ==========================================================
 # Gemini Client
@@ -28,7 +29,8 @@ def generate(prompt: str):
     """
     Generate content using Gemini.
 
-    Automatically retries if the Gemini server is busy.
+    Automatically retries temporary server errors.
+    Handles API quota errors with a user-friendly message.
     """
 
     retries = 3
@@ -44,6 +46,10 @@ def generate(prompt: str):
 
             return response.text
 
+        # --------------------------------------------------
+        # Gemini Server Error
+        # --------------------------------------------------
+
         except ServerError:
 
             if attempt < retries - 1:
@@ -52,8 +58,50 @@ def generate(prompt: str):
 
             else:
 
-                raise
+                raise RuntimeError(
+                    "Gemini AI is temporarily unavailable. "
+                    "Please try again in a few moments."
+                )
 
-        except Exception:
+        # --------------------------------------------------
+        # Gemini Client/API Error
+        # --------------------------------------------------
 
-            raise
+        except ClientError as error:
+
+            error_text = str(error)
+
+            # ----------------------------------------------
+            # Quota / Rate Limit
+            # ----------------------------------------------
+
+            if (
+                "429" in error_text
+                or "RESOURCE_EXHAUSTED" in error_text
+                or "quota" in error_text.lower()
+            ):
+
+                raise RuntimeError(
+                    "⚠️ Gemini API quota temporarily exhausted. "
+                    "Please try again after the quota resets "
+                    "or check your Gemini API usage."
+                )
+
+            # ----------------------------------------------
+            # Other API errors
+            # ----------------------------------------------
+
+            raise RuntimeError(
+                "⚠️ Gemini API request failed. "
+                "Please check your API configuration and try again."
+            )
+
+        # --------------------------------------------------
+        # Unexpected Error
+        # --------------------------------------------------
+
+        except Exception as error:
+
+            raise RuntimeError(
+                f"⚠️ Unable to generate AI response: {error}"
+            )

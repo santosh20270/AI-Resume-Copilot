@@ -88,6 +88,10 @@ elif page == "📄 ATS Analyzer":
 
     st.divider()
 
+    # -------------------------------------------------
+    # Upload Section
+    # -------------------------------------------------
+
     col1, col2 = st.columns(2)
 
     with col1:
@@ -122,19 +126,30 @@ elif page == "📄 ATS Analyzer":
 
     st.divider()
 
+    # -------------------------------------------------
+    # Analyze Resume
+    # -------------------------------------------------
+
     if st.button(
         "🚀 Analyze Resume",
         use_container_width=True,
+        type="primary",
     ):
 
         if resume_file is None:
 
-            st.error("Please upload a resume.")
+            st.error(
+                "Please upload a resume."
+            )
+
             st.stop()
 
         if job_file is None:
 
-            st.error("Please upload a job description.")
+            st.error(
+                "Please upload a job description."
+            )
+
             st.stop()
 
         os.makedirs(
@@ -152,6 +167,10 @@ elif page == "📄 ATS Analyzer":
             job_file.name,
         )
 
+        # -------------------------------------------------
+        # Save Resume
+        # -------------------------------------------------
+
         with open(
             resume_path,
             "wb",
@@ -160,6 +179,10 @@ elif page == "📄 ATS Analyzer":
             f.write(
                 resume_file.getbuffer()
             )
+
+        # -------------------------------------------------
+        # Save Job Description
+        # -------------------------------------------------
 
         with open(
             job_path,
@@ -170,32 +193,87 @@ elif page == "📄 ATS Analyzer":
                 job_file.getbuffer()
             )
 
-        with st.spinner(
-            "📄 Reading Resume..."
-        ):
+        # -------------------------------------------------
+        # Extract Resume
+        # -------------------------------------------------
 
-            resume_text = extract_text(
-                resume_path
+        try:
+
+            with st.spinner(
+                "📄 Reading Resume..."
+            ):
+
+                resume_text = extract_text(
+                    resume_path
+                )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Unable to read the uploaded resume. "
+                "Please check the file and try again."
             )
 
-        with st.spinner(
-            "💼 Reading Job Description..."
-        ):
+            st.stop()
 
-            job_description = extract_text(
-                job_path
+        # -------------------------------------------------
+        # Extract Job Description
+        # -------------------------------------------------
+
+        try:
+
+            with st.spinner(
+                "💼 Reading Job Description..."
+            ):
+
+                job_description = extract_text(
+                    job_path
+                )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Unable to read the uploaded job description. "
+                "Please check the file and try again."
             )
 
-        with st.spinner(
-            "🤖 AI is analyzing your resume..."
-        ):
+            st.stop()
 
-            report = analyze_resume(
-                resume_text,
-                job_description,
+        # -------------------------------------------------
+        # AI Analysis
+        # -------------------------------------------------
+
+        try:
+
+            with st.spinner(
+                "🤖 AI is analyzing your resume..."
+            ):
+
+                report = analyze_resume(
+                    resume_text,
+                    job_description,
+                )
+
+            st.success(
+                "✅ Resume analysis completed successfully!"
             )
 
-        render_dashboard(report)
+            render_dashboard(
+                report
+            )
+
+        except RuntimeError as error:
+
+            st.error(
+                str(error)
+            )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Something went wrong while analyzing "
+                "your resume. Please try again."
+            )
 
 
 # =====================================================

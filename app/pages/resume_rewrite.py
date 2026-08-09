@@ -124,67 +124,130 @@ def render_resume_rewrite():
         # Save Resume
         # -------------------------------------------------
 
-        with open(
-            resume_path,
-            "wb",
-        ) as f:
+        try:
 
-            f.write(
-                resume_file.getbuffer()
+            with open(
+                resume_path,
+                "wb",
+            ) as f:
+
+                f.write(
+                    resume_file.getbuffer()
+                )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Unable to save the uploaded resume. "
+                "Please try again."
             )
+
+            st.stop()
 
         # -------------------------------------------------
         # Save Job Description
         # -------------------------------------------------
 
-        with open(
-            jd_path,
-            "wb",
-        ) as f:
+        try:
 
-            f.write(
-                jd_file.getbuffer()
+            with open(
+                jd_path,
+                "wb",
+            ) as f:
+
+                f.write(
+                    jd_file.getbuffer()
+                )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Unable to save the job description. "
+                "Please try again."
             )
+
+            st.stop()
 
         # -------------------------------------------------
         # Extract Resume
         # -------------------------------------------------
 
-        with st.spinner(
-            "📄 Reading your resume..."
-        ):
+        try:
 
-            resume_text = extract_text(
-                resume_path
+            with st.spinner(
+                "📄 Reading your resume..."
+            ):
+
+                resume_text = extract_text(
+                    resume_path
+                )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Unable to read your resume. "
+                "Please check the file and try again."
             )
+
+            st.stop()
 
         # -------------------------------------------------
         # Extract Job Description
         # -------------------------------------------------
 
-        with st.spinner(
-            "💼 Reading the job description..."
-        ):
+        try:
 
-            jd_text = extract_text(
-                jd_path
+            with st.spinner(
+                "💼 Reading the job description..."
+            ):
+
+                jd_text = extract_text(
+                    jd_path
+                )
+
+        except Exception:
+
+            st.error(
+                "⚠️ Unable to read the job description. "
+                "Please check the file and try again."
             )
+
+            st.stop()
 
         # -------------------------------------------------
         # AI Rewrite
         # -------------------------------------------------
 
-        with st.spinner(
-            "🤖 AI is optimizing your resume..."
-        ):
+        try:
 
-            rewritten = rewrite_resume(
-                resume_text,
-                jd_text,
+            with st.spinner(
+                "🤖 AI is optimizing your resume..."
+            ):
+
+                rewritten = rewrite_resume(
+                    resume_text,
+                    jd_text,
+                )
+
+        except RuntimeError as error:
+
+            st.error(
+                str(error)
             )
 
+            st.stop()
+
+        except Exception:
+
+            st.error(
+                "⚠️ Something went wrong while rewriting "
+                "your resume. Please try again."
+            )
+
+            st.stop()
+
         # -------------------------------------------------
-        # Store result
+        # Store Result
         # -------------------------------------------------
 
         st.session_state[
@@ -275,20 +338,28 @@ def render_resume_rewrite():
 
             with col2:
 
-                docx_file = generate_docx(
-                    rewritten
-                )
+                try:
 
-                st.download_button(
-                    label="📝 Word",
-                    data=docx_file,
-                    file_name="Rewritten_Resume.docx",
-                    mime=(
-                        "application/vnd.openxmlformats-officedocument."
-                        "wordprocessingml.document"
-                    ),
-                    use_container_width=True,
-                )
+                    docx_file = generate_docx(
+                        rewritten
+                    )
+
+                    st.download_button(
+                        label="📝 Word",
+                        data=docx_file,
+                        file_name="Rewritten_Resume.docx",
+                        mime=(
+                            "application/vnd.openxmlformats-officedocument."
+                            "wordprocessingml.document"
+                        ),
+                        use_container_width=True,
+                    )
+
+                except Exception:
+
+                    st.error(
+                        "⚠️ Word document generation failed."
+                    )
 
             # -------------------------------------------------
             # PDF
@@ -296,17 +367,25 @@ def render_resume_rewrite():
 
             with col3:
 
-                pdf_file = generate_pdf(
-                    rewritten
-                )
+                try:
 
-                st.download_button(
-                    label="📕 PDF",
-                    data=pdf_file,
-                    file_name="Rewritten_Resume.pdf",
-                    mime="application/pdf",
-                    use_container_width=True,
-                )
+                    pdf_file = generate_pdf(
+                        rewritten
+                    )
+
+                    st.download_button(
+                        label="📕 PDF",
+                        data=pdf_file,
+                        file_name="Rewritten_Resume.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                    )
+
+                except Exception:
+
+                    st.error(
+                        "⚠️ PDF generation failed."
+                    )
 
             st.divider()
 
