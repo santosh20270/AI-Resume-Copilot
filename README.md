@@ -1,14 +1,17 @@
-# 🤖 AI Resume Copilot
+# 🚀 AI Resume Copilot
 
 An AI-powered career assistant built with **Python**, **Streamlit**, and **Google Gemini AI**.
 
-AI Resume Copilot helps job seekers improve their resumes, generate ATS-friendly cover letters, and prepare for interviews using Generative AI.
+AI Resume Copilot helps job seekers analyze, improve, and tailor their resumes while preparing for job applications and interviews.
 
 ---
 
 ## ✨ Features
 
 ### 📄 ATS Resume Analyzer
+
+Analyze your resume against a target job description.
+
 - ATS Compatibility Score
 - Keyword Match Analysis
 - Skills Match
@@ -16,122 +19,123 @@ AI Resume Copilot helps job seekers improve their resumes, generate ATS-friendly
 - Education Match
 - Strengths & Weaknesses
 - Improvement Suggestions
+- Resume vs Job Description analysis
+
+---
 
 ### 📝 AI Resume Rewrite
-- ATS-friendly Resume Rewrite
-- Better Professional Summary
-- Improved Skills Section
-- Better Project Descriptions
-- Markdown Export
-- Word (.docx) Export
+
+Rewrite and optimize your resume for a specific job description while keeping the information truthful.
+
+- ATS-friendly rewriting
+- Professional summary improvement
+- Keyword optimization
+- Skills optimization
+- Project description improvement
+- Grammar and wording improvements
+- Truthfulness-focused AI instructions
+- Markdown download
+- Word (DOCX) download
+- PDF download
+
+---
 
 ### 📨 AI Cover Letter Generator
-- Personalized Cover Letter
-- ATS Optimized
-- Tailored to Job Description
-- Markdown Export
-- Word (.docx) Export
+
+Generate a professional cover letter tailored to your resume and target job.
+
+- Resume-based personalization
+- Job-description tailoring
+- ATS-friendly writing
+- Professional tone
+- Markdown download
+- Word (DOCX) download
+- PDF download
+
+---
 
 ### 🎤 AI Interview Preparation
-- Technical Questions
-- HR Questions
-- Behavioral Questions
-- Suggested Answers
-- Interview Tips
-- Word (.docx) Export
+
+Generate a complete interview preparation guide based on your resume and target job.
+
+- Target job role
+- Interview difficulty
+- Technical questions
+- HR questions
+- Behavioral questions
+- Suggested answers
+- Interview preparation tips
 
 ---
 
-## 🚀 Technologies Used
+### 📊 AI Skill Gap Dashboard
 
-- Python
-- Streamlit
-- Google Gemini AI
-- python-docx
-- PyMuPDF
-- Pillow
-- Git
-- GitHub
+Compare your current skills with the requirements of a target job.
+
+- Overall skill readiness
+- Matched skills
+- Missing skills
+- Skill match percentage
+- Interactive skill analytics
+- Learning roadmap
+- Recommended portfolio projects
+- Recommended certifications
+- Estimated learning time
 
 ---
 
-## 📂 Project Structure
+## 🛡️ Error Handling
 
-```
+The application includes production-oriented error handling for:
+
+- Gemini API quota errors
+- Gemini server errors
+- AI generation failures
+- Resume extraction failures
+- Job description extraction failures
+- PDF generation failures
+- DOCX generation failures
+- File processing errors
+
+Users receive friendly error messages instead of raw application tracebacks.
+
+---
+
+## 🧰 Technology Stack
+
+- **Python**
+- **Streamlit**
+- **Google Gemini AI**
+- **Pandas**
+- **Plotly**
+- **PyPDF**
+- **python-docx**
+- **ReportLab**
+- **Pytesseract**
+- **Pillow**
+- **python-dotenv**
+
+---
+
+## 📁 Project Structure
+
+```text
 AI-Resume-Copilot/
 │
 ├── app/
 │   ├── ai/
 │   ├── pages/
+│   ├── readers/
 │   ├── services/
 │   ├── ui/
 │   └── utils/
 │
-├── uploads/
-├── streamlit_app.py
+├── data/
+├── docs/
+├── reports/
+├── tests/
+│
+├── .gitignore
 ├── requirements.txt
-└── README.md
-```
-
----
-
-## ⚙️ Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/santosh20270/AI-Resume-Copilot.git
-```
-
-Move into the project:
-
-```bash
-cd AI-Resume-Copilot
-```
-
-Create a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Activate it:
-
-### Windows
-
-```bash
-.venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the application:
-
-```bash
-streamlit run streamlit_app.py
-```
-
----
-
-## 📌 Roadmap
-
-- ✅ ATS Resume Analyzer
-- ✅ Resume Rewrite
-- ✅ Cover Letter Generator
-- ✅ Interview Preparation
-- ⏳ Skill Gap Dashboard
-- ⏳ Learning Roadmap
-- ⏳ Certification Recommendations
-- ⏳ Deployment
-
----
-
-## 👨‍💻 Developer
-
-**Santosh**
-
-Built using ❤️ with Python, Streamlit, and Google Gemini AI.
+├── README.md
+└── streamlit_app.py
