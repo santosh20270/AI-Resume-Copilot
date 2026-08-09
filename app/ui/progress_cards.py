@@ -8,23 +8,33 @@ def render_progress_cards(report):
 
     st.subheader("📈 Skill Gap Summary")
 
-    matched = len(report["matched_skills"])
-    missing = len(report["missing_skills"])
+    matched = len(
+        report.get("matched_skills", [])
+    )
+
+    missing = len(
+        report.get("missing_skills", [])
+    )
 
     total = matched + missing
 
     if total == 0:
         percentage = 0
     else:
-        percentage = int((matched / total) * 100)
+        percentage = int(
+            (matched / total) * 100
+        )
 
     st.metric(
         "🎯 Skill Match",
         f"{percentage}%"
     )
 
-    st.progress(percentage / 100)
+    st.progress(
+        percentage / 100
+    )
 
-    st.caption(f"{matched} matched skills • {missing} missing skills")
-
-    st.divider()
+    st.caption(
+        f"{matched} matched skills • "
+        f"{missing} missing skills"
+    )

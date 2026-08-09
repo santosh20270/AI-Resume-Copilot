@@ -8,11 +8,25 @@ def render_skill_gap_charts(report):
     Render interactive Plotly charts for the Skill Gap Dashboard.
     """
 
-    matched = len(report["matched_skills"])
-    missing = len(report["missing_skills"])
+    matched = len(
+        report.get("matched_skills", [])
+    )
 
-    st.divider()
-    st.subheader("📊 Interactive Skill Analytics")
+    missing = len(
+        report.get("missing_skills", [])
+    )
+
+    # =====================================================
+    # Section Header
+    # =====================================================
+
+    st.subheader(
+        "📊 Interactive Skill Analytics"
+    )
+
+    # =====================================================
+    # Charts
+    # =====================================================
 
     col1, col2 = st.columns(2)
 
@@ -43,7 +57,9 @@ def render_skill_gap_charts(report):
             title="Skill Match Distribution",
         )
 
-        donut.update_traces(textposition="inside")
+        donut.update_traces(
+            textposition="inside"
+        )
 
         st.plotly_chart(
             donut,
@@ -77,7 +93,9 @@ def render_skill_gap_charts(report):
             text="Count",
         )
 
-        bar.update_traces(textposition="outside")
+        bar.update_traces(
+            textposition="outside"
+        )
 
         st.plotly_chart(
             bar,
