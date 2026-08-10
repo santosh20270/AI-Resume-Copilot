@@ -6,6 +6,26 @@ AI Resume Copilot helps job seekers analyze, improve, and tailor their resumes w
 
 ---
 
+## 📸 Application Screenshots
+
+### 🏠 AI Resume Copilot
+
+![AI Resume Copilot](docs/home.png)
+
+### 📄 ATS Resume Analyzer
+
+![ATS Resume Analyzer](docs/ats-analyzer.png)
+
+### 📊 ATS Analysis Overview
+
+![ATS Analysis Overview](docs/ats-overview.png)
+
+### 💡 AI Resume Insights
+
+![AI Resume Insights](docs/ats-insights.png)
+
+---
+
 ## ✨ Features
 
 ### 📄 ATS Resume Analyzer
