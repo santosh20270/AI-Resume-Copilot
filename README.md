@@ -1,5 +1,9 @@
 # 🚀 AI Resume Copilot
 
+### 🌐 Live Demo
+
+[Open AI Resume Copilot](https://ai-resume-copilot-itrdlzk3emjfhqshedv5cf.streamlit.app/)
+
 An AI-powered career assistant built with **Python**, **Streamlit**, and **Google Gemini AI**.
 
 AI Resume Copilot helps job seekers analyze, improve, and tailor their resumes while preparing for job applications and interviews.
