@@ -3,3 +3,5 @@ uploads/
 .venv/
 __pycache__/
 *.pyc
+data/resume.pdf
+data/job_description.txt
