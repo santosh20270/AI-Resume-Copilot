@@ -23,7 +23,7 @@ def render_settings():
 
     with col1:
         st.metric("Application", "AI Resume Copilot")
-        st.metric("Version", "3.3")
+        st.metric("Version", "3.7")
         st.metric("Developer", "Santosh")
 
     with col2:
