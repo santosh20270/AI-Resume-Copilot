@@ -76,7 +76,7 @@ def render_sidebar():
 
         st.subheader("🤖 AI Information")
 
-        st.success("🚀 Version 3.6")
+        st.success("🚀 Version 3.7")
 
         st.info("Gemini 3.6 Flash")
 
